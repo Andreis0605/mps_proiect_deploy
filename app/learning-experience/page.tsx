@@ -67,20 +67,53 @@ export default function LearningExperience() {
 
   /* ================= DATA LOAD ================= */
 
-  async function loadDeepChaptersFromDB(dbKey: string) {
+  // Load deep chapters; support DB shapes where chapters are grouped under
+  // numeric keys (0..3). If selectedSet is provided, prefer that set; otherwise
+  // try to use session/backend selection, then fall back to 0.
+  async function loadDeepChaptersFromDB(dbKey: string, selectedSet: number | null = null) {
     try {
       const data = await readData(dbKey);
       if (!data) return [];
 
       const chapters: DeepChapter[] = [];
 
-      Object.values(data).forEach((item: any) => {
+      // If DB organizes chapters by top-level numeric keys (0,1,2,3), prefer
+      // the selectedSet if available.
+      const topKeys = Object.keys(data || {});
+      const numericTopKeys = topKeys.filter(k => /^\d+$/.test(k));
+
+        let itemsToIterate: any[] = [];
+      if (numericTopKeys.length > 0) {
+
+        if (selectedSet !== null && typeof data[String(selectedSet)] !== 'undefined') {
+          const chose = data[String(selectedSet)];
+          // if the chosen node is a single chapter object (has title/info), use it
+          if (chose && typeof chose === 'object' && (chose.title || chose.info)) {
+            itemsToIterate = [chose];
+          } else {
+            itemsToIterate = Object.values(chose || {});
+          }
+        } else if (typeof data['0'] !== 'undefined') {
+          const zero = data['0'];
+          if (zero && typeof zero === 'object' && (zero.title || zero.info)) {
+            itemsToIterate = [zero];
+          } else {
+            // Fallback: if no selection, prefer set 0 to keep consistent UX
+            itemsToIterate = Object.values(zero || {});
+          }
+        } else {
+          // As a last resort, flatten all sets
+          itemsToIterate = Object.values(data).flatMap((s: any) => Object.values(s || {}));
+        }
+      } else {
+          itemsToIterate = Object.values(data);
+      }
+
+        itemsToIterate.forEach((item: any) => {
         if (item?.title && item?.info) {
           chapters.push({
             title: item.title,
-            info: Array.isArray(item.info)
-              ? item.info
-              : Object.values(item.info),
+            info: Array.isArray(item.info) ? item.info : Object.values(item.info),
           });
         }
       });
@@ -117,10 +150,26 @@ export default function LearningExperience() {
     };
 
     const controlData = await readData(controlMap[key]);
-    const deepData = await loadDeepChaptersFromDB(normalMap[key]);
 
-    setTopicContent(controlData ? Object.values(controlData).slice(0, 5) : null);
-    setDeepChapters(deepData);
+    // determine selected set for this topic (if available)
+    let selectedSet: number | null = null;
+    try {
+      const s = typeof window !== 'undefined' ? localStorage.getItem('sessionUser') : null;
+      const u = s ? JSON.parse(s) : null;
+      if (u && u.selectedSets && typeof u.selectedSets[normalMap[key]] !== 'undefined') {
+        selectedSet = Number(u.selectedSets[normalMap[key]]);
+      } else if (u && u.email) {
+        const usr = await findUserByEmail(u.email);
+        if (usr && usr.selectedSets && typeof usr.selectedSets[normalMap[key]] !== 'undefined') {
+          selectedSet = Number(usr.selectedSets[normalMap[key]]);
+        }
+      }
+  } catch (err) {}
+
+  const deepData = await loadDeepChaptersFromDB(normalMap[key], selectedSet);
+
+  setTopicContent(controlData ? Object.values(controlData).slice(0, 5) : null);
+  setDeepChapters(deepData);
     setTopicLoading(false);
   }
 
