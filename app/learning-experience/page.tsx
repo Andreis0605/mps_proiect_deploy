@@ -352,17 +352,25 @@ export default function LearningExperience() {
 
           {deepChapters.map((ch, idx) => (
             <div key={idx}>
-              {idx === Math.floor(deepChapters.length / 2) && isGamified === true && (
-                <div className="my-24">
-                  <DanceBreak />
-                </div>
-              )}
 
               <div className="max-w-4xl mx-auto px-6 mb-12">
                 <h3 className="text-3xl font-bold mb-4">{ch.title}</h3>
-                {ch.info.map((p, i) => (
-                  <p key={i} className="mb-3 text-lg">{p}</p>
-                ))}
+
+                {ch.info.map((p, i) => {
+                  const mid = Math.floor(ch.info.length / 2);
+                  return (
+                    <div key={i}>
+                      <p className="mb-3 text-lg">{p}</p>
+                      {isGamified === true && i === mid && (
+                        <div className="my-12 w-full">
+                          <div className="w-full bg-transparent">
+                            <DanceBreak />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}
