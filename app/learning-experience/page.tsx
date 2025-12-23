@@ -224,6 +224,20 @@ export default function LearningExperience() {
                   {/* LEFT */}
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
+
+                    {/* Render informational text (from DB) above the question when present */}
+                    {item?.info && (
+                      <div className="mb-4 text-left">
+                        {(Array.isArray(item.info) ? item.info : Object.values(item.info)).map(
+                          (inf: any, i: number) => (
+                            <p key={i} className="mb-2 text-sm text-gray-700">
+                              {inf}
+                            </p>
+                          )
+                        )}
+                      </div>
+                    )}
+
                     <p className="mb-4">{item.question}</p>
 
                     <div className="space-y-2">
