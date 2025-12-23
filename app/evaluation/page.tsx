@@ -64,6 +64,21 @@ const topics = {
 export default function Evaluation() {
   const router = useRouter();
 
+  // Guard: redirect to signin if not logged in
+  if (typeof window !== 'undefined') {
+    try {
+      const s = localStorage.getItem('sessionUser');
+      const u = s ? JSON.parse(s) : null;
+      if (!u || !u.email) {
+        router.push('/signin');
+        return <div />;
+      }
+    } catch (err) {
+      router.push('/signin');
+      return <div />;
+    }
+  }
+
   const userEmail =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("sessionUser") || "{}")?.email

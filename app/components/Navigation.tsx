@@ -7,7 +7,7 @@ import { findUserByEmail } from '../../firebase/auth';
 
 // existing profile button will be rendered inside ItemsVariant
 
-function ItemsVariant({ avatarSrc, isGamified }: { avatarSrc?: string | null, isGamified: boolean | null }) {
+function ItemsVariant({ avatarSrc, isGamified, loggedIn }: { avatarSrc?: string | null, isGamified: boolean | null, loggedIn: boolean }) {
   const pathname = usePathname();
 
   const isActive = (path: string) =>
@@ -19,20 +19,23 @@ function ItemsVariant({ avatarSrc, isGamified }: { avatarSrc?: string | null, is
       <Link href="/home" className={`text-white transition-all ${isActive("/home")}`}>
         <p className="text-sm">Home</p>
       </Link>
+      {loggedIn && (
+        <>
+          <Link
+            href="/learning-experience"
+            className={`text-white transition-all ${isActive("/learning-experience")}`}
+          >
+            <p className="text-sm">Learning Experience</p>
+          </Link>
 
-      <Link
-        href="/learning-experience"
-        className={`text-white transition-all ${isActive("/learning-experience")}`}
-      >
-        <p className="text-sm">Learning Experience</p>
-      </Link>
-
-      <Link
-        href="/evaluation"
-        className={`text-white transition-all ${isActive("/evaluation")}`}
-      >
-        <p className="text-sm">Evaluation</p>
-      </Link>
+          <Link
+            href="/evaluation"
+            className={`text-white transition-all ${isActive("/evaluation")}`}
+          >
+            <p className="text-sm">Evaluation</p>
+          </Link>
+        </>
+      )}
       {isGamified === true && (
         <Link
           href="/scoreboard"
@@ -59,6 +62,7 @@ function ItemsVariant({ avatarSrc, isGamified }: { avatarSrc?: string | null, is
 export default function Navigation() {
   const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const [isGamified, setIsGamified] = useState<boolean | null>(null);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const read = () => {
@@ -66,6 +70,7 @@ export default function Navigation() {
         const s = localStorage.getItem('sessionUser');
         if (!s) { setAvatarSrc(null); return; }
         const u = JSON.parse(s);
+        setLoggedIn(Boolean(u && u.email));
         setAvatarSrc(u && u.avatarImage ? u.avatarImage : null);
         // pick up the gamification flag if present in the client session copy
         if (u && typeof u.gamification !== 'undefined') {
@@ -101,7 +106,7 @@ export default function Navigation() {
       <div className="flex items-center">
         <p className="text-sm">Studiul aportului gamificării asupra învățării</p>
       </div>
-      <ItemsVariant avatarSrc={avatarSrc} isGamified={isGamified} />
+      <ItemsVariant avatarSrc={avatarSrc} isGamified={isGamified} loggedIn={loggedIn} />
     </nav>
   );
 }
