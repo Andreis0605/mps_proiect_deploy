@@ -110,17 +110,61 @@ export default function Evaluation() {
 
     /* ================= NORMAL QUESTIONS (10) ================= */
 
+    // Determine selected set for this topic (if available)
+    let selectedSet: number | null = null;
+    try {
+      const s = typeof window !== 'undefined' ? localStorage.getItem('sessionUser') : null;
+      const u = s ? JSON.parse(s) : null;
+      if (u && u.selectedSets && typeof u.selectedSets[dbKey] !== 'undefined') {
+        selectedSet = Number(u.selectedSets[dbKey]);
+      } else if (u && u.email) {
+        const usr = await findUserByEmail(u.email);
+        if (usr && usr.selectedSets && typeof usr.selectedSets[dbKey] !== 'undefined') {
+          selectedSet = Number(usr.selectedSets[dbKey]);
+        }
+      }
+    } catch (err) {}
+
     const normalData = await readData(dbKey);
 
     const normalAll: any[] = [];
 
-    normalData.forEach((chapter: any) => {
-      if (chapter.quiz) {
-        Object.values(chapter.quiz).forEach((q: any) => {
-          normalAll.push({ ...q, __chapter: chapter });
-        });
+    // Handle DB shapes where chapters are grouped by numeric top-level keys (0..3)
+    if (normalData && typeof normalData === 'object') {
+      const topKeys = Object.keys(normalData);
+      const numericTopKeys = topKeys.filter(k => /^\d+$/.test(k));
+      let chaptersToIterate: any[] = [];
+
+      if (numericTopKeys.length > 0) {
+        if (selectedSet !== null && typeof normalData[String(selectedSet)] !== 'undefined') {
+          const node = normalData[String(selectedSet)];
+          if (node && typeof node === 'object' && node.quiz) {
+            chaptersToIterate = [node];
+          } else {
+            chaptersToIterate = Object.values(node || {});
+          }
+        } else if (typeof normalData['0'] !== 'undefined') {
+          const zero = normalData['0'];
+          if (zero && typeof zero === 'object' && zero.quiz) {
+            chaptersToIterate = [zero];
+          } else {
+            chaptersToIterate = Object.values(zero || {});
+          }
+        } else {
+          chaptersToIterate = Object.values(normalData).flatMap((s: any) => Object.values(s || {}));
+        }
+      } else {
+        chaptersToIterate = Object.values(normalData);
       }
-    });
+
+      chaptersToIterate.forEach((chapter: any) => {
+        if (chapter && chapter.quiz) {
+          Object.values(chapter.quiz).forEach((q: any) => {
+            normalAll.push({ ...q, __chapter: chapter });
+          });
+        }
+      });
+    }
 
     const selectedNormal = normalAll
       .sort(() => Math.random() - 0.5)
@@ -153,7 +197,16 @@ export default function Evaluation() {
 
     const controlData = await readData(`Control_${dbKey}`);
 
-    const controlQs: Question[] = Object.values(controlData ?? {})
+    // If control items have a `set` property, only include those matching selectedSet
+    let controlItems = Object.values(controlData ?? {});
+    if (selectedSet !== null) {
+      const hasSet = controlItems.some((c: any) => typeof c.set !== 'undefined');
+      if (hasSet) {
+        controlItems = controlItems.filter((c: any) => Number(c.set) === selectedSet);
+      }
+    }
+
+    const controlQs: Question[] = controlItems
       .slice(0, 5)
       .map((q: any, i: number) => ({
         id: normalQs.length + i + 1,
