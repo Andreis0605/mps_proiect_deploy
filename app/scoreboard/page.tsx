@@ -161,11 +161,33 @@ function RankingCard({ place, username, score, avatar, isCurrentUser = false }: 
 export default function ScoreboardPage() {
   const router = useRouter();
   const [ranking, setRanking] = useState<any[]>([]);
-
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const userEmail =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("sessionUser") || "{}")?.email
       : null;
+
+  useEffect(() => {
+    const read = () => {
+      try {
+        const s = localStorage.getItem('sessionUser');
+        if (!s) { setAvatarSrc(null); return; }
+        const u = JSON.parse(s);
+        setAvatarSrc(u && u.avatarImage ? u.avatarImage : null);
+      } catch (err) {
+        setAvatarSrc(null);
+      }
+    };
+
+    read();
+    const onChange = () => read();
+    window.addEventListener('storage', onChange);
+    window.addEventListener('sessionUserChanged', onChange);
+    return () => {
+      window.removeEventListener('storage', onChange);
+      window.removeEventListener('sessionUserChanged', onChange);
+    };
+  }, []);
 
   // Guard: if user is not gamified, redirect away
   useEffect(() => {
@@ -228,6 +250,27 @@ export default function ScoreboardPage() {
 
     loadRanking();
   }, []);
+
+  // When the session avatar changes, reflect it in the ranking list for the
+  // current user (match by avatarName stored in sessionUser).
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('sessionUser');
+      const u = s ? JSON.parse(s) : null;
+      if (!u || !u.avatarName) return;
+
+      setRanking(prev => prev.map(r => {
+        try {
+          if (r.username === u.avatarName) {
+            return { ...r, avatar: avatarSrc || r.avatar };
+          }
+        } catch (e) {}
+        return r;
+      }));
+    } catch (err) {
+      // ignore
+    }
+  }, [avatarSrc]);
 
 
   useEffect(() => {
@@ -293,6 +336,10 @@ export default function ScoreboardPage() {
             <button
               className="bg-black text-white px-12 py-4 rounded-lg text-xl hover:bg-gray-900 transition-colors"
               type="button"
+              onClick={() => {
+                const el = document.getElementById('score-breakdown');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
             >
               Check Your Ranking
             </button>
@@ -306,7 +353,7 @@ export default function ScoreboardPage() {
             />
             <div className="absolute bottom-[30%] left-1/2 transform -translate-x-1/2">
               <img
-                src={(imgImage79 as any).src ?? (imgImage79 as any)}
+                src={avatarSrc || (imgImage79 as any).src || (imgImage79 as any)}
                 alt="Avatar"
                 className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
               />
@@ -333,7 +380,7 @@ export default function ScoreboardPage() {
         <p className="text-black text-6xl">Să aflăm unde te clasezi!</p>
       </div>
 
-      <div className="bg-white py-16">
+      <div id="score-breakdown" className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-8">
           <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-10 shadow-lg">
             <h3 className="text-4xl text-center mb-10 text-purple-900">Your Score Breakdown</h3>

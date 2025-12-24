@@ -92,6 +92,7 @@ export default function Evaluation() {
   const [loading, setLoading] = useState(false);
   const [isGamified, setIsGamified] = useState<boolean | null>(null);
   const [revealAnswers, setRevealAnswers] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
 
   /* ================= LOGIC ================= */
 
@@ -105,9 +106,11 @@ export default function Evaluation() {
   const submitTest = async () => {
     const final = calculateScore();
     setScore(final);
-    // For gamified users, keep questions on screen and reveal correct/incorrect
+    // For gamified users, keep questions on screen and reveal correct/incorrect,
+    // but also show the score panel beneath the quiz.
     if (isGamified === true) {
       setRevealAnswers(true);
+      setShowScore(true);
     } else {
       setShowScore(true);
     }
@@ -255,20 +258,51 @@ export default function Evaluation() {
       // ignore parse errors and fall back to backend
     }
 
-    // backend fallback
-    (async () => {
-      if (!userEmail) return setIsGamified(null);
+    // read avatar from session so we can display it dynamically in the score panel
+    const readAvatar = () => {
       try {
-        const data = await findUserByEmail(userEmail);
-        if (data && typeof data.gamification !== "undefined") {
-          setIsGamified(Boolean(data.gamification));
+        const s = localStorage.getItem('sessionUser');
+        if (!s) { setAvatarSrc(null); return; }
+        const u = JSON.parse(s);
+        if (u && u.avatarImage) {
+          if (typeof u.avatarImage === 'string') setAvatarSrc(u.avatarImage);
+          else setAvatarSrc(u.avatarImage.src || u.avatarImage || null);
         } else {
+          setAvatarSrc(null);
+        }
+      } catch (err) {
+        setAvatarSrc(null);
+      }
+    };
+
+    readAvatar();
+    const onChangeAvatar = () => readAvatar();
+    window.addEventListener('storage', onChangeAvatar);
+    window.addEventListener('sessionUserChanged', onChangeAvatar);
+
+    // backend fallback: if session doesn't include gamification, ask backend
+    (async () => {
+      if (!userEmail) {
+        setIsGamified(null);
+      } else {
+        try {
+          const data = await findUserByEmail(userEmail);
+          if (data && typeof data.gamification !== "undefined") {
+            setIsGamified(Boolean(data.gamification));
+          } else {
+            setIsGamified(null);
+          }
+        } catch (e) {
           setIsGamified(null);
         }
-      } catch (e) {
-        setIsGamified(null);
       }
     })();
+
+    // cleanup added listeners when this effect is torn down
+    return () => {
+      window.removeEventListener('storage', onChangeAvatar);
+      window.removeEventListener('sessionUserChanged', onChangeAvatar);
+    };
   }, []);
 
   const ConditionalImg = ({ src, alt, className }: { src: string; alt?: string; className?: string }) => {
@@ -308,7 +342,7 @@ export default function Evaluation() {
       )}
 
       {/* QUIZ */}
-      {questions.length > 0 && !showScore && (
+      {questions.length > 0 && (!showScore || revealAnswers) && (
         <section className="py-16 bg-gray-100">
           <div className="max-w-3xl mx-auto space-y-8">
             {questions.map(q => (
@@ -367,13 +401,13 @@ export default function Evaluation() {
       )}
 
       {/* SCORE */}
-      {showScore && (
+      {(showScore || revealAnswers) && (
         <section className="py-20 bg-gray-100 text-center">
           <h2 className="text-4xl font-bold mb-4">
             Scor: {score}/{questions.length}
           </h2>
 
-          <ConditionalImg src={imgAvatarUser.src} className="w-20 h-20 mx-auto rounded-full" />
+          <ConditionalImg src={avatarSrc || imgAvatarUser.src} className="w-20 h-20 mx-auto rounded-full" />
 
           <div className="flex flex-col gap-4 mt-6">
             {isGamified === true && (
