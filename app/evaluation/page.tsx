@@ -91,6 +91,7 @@ export default function Evaluation() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isGamified, setIsGamified] = useState<boolean | null>(null);
+  const [revealAnswers, setRevealAnswers] = useState(false);
 
   /* ================= LOGIC ================= */
 
@@ -104,7 +105,12 @@ export default function Evaluation() {
   const submitTest = async () => {
     const final = calculateScore();
     setScore(final);
-    setShowScore(true);
+    // For gamified users, keep questions on screen and reveal correct/incorrect
+    if (isGamified === true) {
+      setRevealAnswers(true);
+    } else {
+      setShowScore(true);
+    }
 
     if (userEmail) {
       // persist per-category evaluation score (store points)
@@ -313,17 +319,40 @@ export default function Evaluation() {
 
                 {q.options.map((opt, i) => {
                   const letter = String.fromCharCode(97 + i);
+                  const selected = answers[q.id] === letter;
+                  const correct = q.correctAnswer === letter;
+
+                  // When answers are revealed, apply correctness classes for gamified users
+                  const revealClass = revealAnswers
+                    ? correct
+                      ? 'bg-green-50 border border-green-400'
+                      : selected
+                        ? 'bg-red-50 border border-red-400'
+                        : ''
+                    : '';
+
                   return (
-                    <label key={letter} className="block mb-2">
+                    <label key={letter} className={`block mb-2 p-2 rounded ${revealClass}`}>
                       <input
                         type="radio"
-                        checked={answers[q.id] === letter}
+                        checked={selected}
                         onChange={() => handleAnswer(q.id, letter)}
+                        disabled={revealAnswers}
                       />{" "}
                       {opt}
                     </label>
                   );
                 })}
+
+                {/* Inline score banner for gamified users when answers are revealed */}
+                {revealAnswers && isGamified === true && (
+                  <div className="mt-4 p-3 bg-white border rounded text-left">
+                    <strong>Răspunsuri</strong>: ai răspuns corect la {answers ? Object.keys(answers).filter(k => {
+                      const id = Number(k);
+                      return answers[id] === questions.find(qx => qx.id === id)?.correctAnswer;
+                    }).length : 0} din {questions.length}
+                  </div>
+                )}
               </div>
             ))}
 
