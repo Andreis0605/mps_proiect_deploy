@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /* ================= IMAGES ================= */
@@ -78,7 +78,10 @@ export default function LearningExperience() {
   );
 
   const [deepChapters, setDeepChapters] = useState<DeepChapter[]>([]);
+  const [highlightTitle, setHighlightTitle] = useState<string | null>(null);
   const [isGamified, setIsGamified] = useState<boolean | null>(null);
+
+  const [highlightTopic, setHighlightTopic] = useState<string | null>(null);
 
   /* ================= DATA LOAD ================= */
 
@@ -209,11 +212,80 @@ export default function LearningExperience() {
     }
   });
 
+  // read requested highlight (if any) from localStorage when the page mounts
+  // evaluation page will set { title, info } into 'highlightChapter'
+  useState(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? localStorage.getItem('highlightChapter') : null;
+      if (raw) {
+        const obj = JSON.parse(raw);
+        if (obj && obj.title) {
+          setHighlightTitle(String(obj.title));
+        }
+        // remove it after reading so it doesn't persist
+        localStorage.removeItem('highlightChapter');
+      }
+    } catch (e) {}
+  });
+
+  // read requested topic (if any)
+  useEffect(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? localStorage.getItem('highlightTopic') : null;
+      if (raw) {
+        setHighlightTopic(String(raw));
+        localStorage.removeItem('highlightTopic');
+      }
+    } catch (e) {}
+  }, []);
+
   // helper to render images only for gamified users (hide when explicitly false)
   const ConditionalImg = ({ src, alt, className }: { src: any; alt?: string; className?: string }) => {
     if (isGamified === false) return null;
     return <img src={src} alt={alt || ''} className={className} />;
   };
+
+  // when deepChapters are available and a highlightTitle is set, scroll to it
+  // and clear the visual highlight after a short timeout
+  useState(() => {
+    // noop initializer to keep ordering; real effect below uses useEffect-like pattern
+  });
+
+  useEffect(() => {
+    if (!highlightTitle) return;
+    if (!deepChapters || deepChapters.length === 0) return;
+
+    const idx = deepChapters.findIndex(d => d.title === highlightTitle);
+    if (idx === -1) return;
+
+    const id = `deep-chapter-${idx}`;
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // keep the ring highlight for 4s then remove
+      const t = setTimeout(() => setHighlightTitle(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [deepChapters, highlightTitle]);
+
+  // if a highlightTopic was requested, auto-load it when the page is ready
+  useEffect(() => {
+    if (!highlightTopic) return;
+    // call loadTopic with a friendly label; the label is optional for selection
+    try {
+      // Provide map from learning keys to labels used in UI
+      const labelMap: Record<string, string> = {
+        human_body: 'Corpul Uman',
+        animals: 'Animale',
+        history: 'Istorie',
+        geography: 'Geografie',
+        famous_people: 'Oameni Celebri',
+      };
+      loadTopic(highlightTopic, labelMap[highlightTopic] || '');
+      // clear it so repeated mounts don't recalc
+      setHighlightTopic(null);
+    } catch (e) {}
+  }, [highlightTopic]);
 
   /* ================= NAV ================= */
 
@@ -368,7 +440,10 @@ export default function LearningExperience() {
           {deepChapters.map((ch, idx) => (
             <div key={idx}>
 
-              <div className="max-w-4xl mx-auto px-6 mb-12">
+              <div
+                id={"deep-chapter-" + idx}
+                className={`max-w-4xl mx-auto px-6 mb-12 ${highlightTitle === ch.title ? 'ring-4 ring-yellow-300 bg-yellow-50' : ''}`}
+              >
                 <h3 className="text-3xl font-bold mb-4">{ch.title}</h3>
 
                 {ch.info.map((p, i) => {

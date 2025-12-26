@@ -345,6 +345,61 @@ export default function Evaluation() {
       {questions.length > 0 && (!showScore || revealAnswers) && (
         <section className="py-16 bg-gray-100">
           <div className="max-w-3xl mx-auto space-y-8">
+            {/* HINT BUTTON: navigates to the learning text for this user */}
+            {isGamified === true && (
+              <div className="text-left">
+                <button
+                onClick={() => {
+                  try {
+                    const raw = localStorage.getItem('lastEvaluationChapters');
+                    let pick = null;
+                    if (raw) {
+                      const arr = JSON.parse(raw);
+                      if (Array.isArray(arr) && arr.length > 0) pick = arr[0];
+                    }
+
+                    if (pick) {
+                      // store pick so learning-experience can highlight/scroll to it
+                      localStorage.setItem('highlightChapter', JSON.stringify(pick));
+                    } else {
+                      // fallback: clear any stale highlight
+                      localStorage.removeItem('highlightChapter');
+                    }
+
+                    // also store topic key so learning-experience can auto-select the topic
+                    try {
+                      const dbLower = currentTopicKey; // previously set to dbKey.toLowerCase()
+                      const dbToLearning: Record<string, string> = {
+                        human: 'human_body',
+                        animals: 'animals',
+                        history: 'history',
+                        geo: 'geography',
+                        famous: 'famous_people',
+                      };
+                      if (dbLower && dbToLearning[dbLower]) {
+                        localStorage.setItem('highlightTopic', dbToLearning[dbLower]);
+                      } else {
+                        localStorage.removeItem('highlightTopic');
+                      }
+                    } catch (e) {}
+
+                    // open learning experience in a new tab
+                    try {
+                      window.open('/learning-experience', '_blank');
+                    } catch (e) {
+                      // fallback to client router if window.open not available
+                      router.push('/learning-experience');
+                    }
+                  } catch (e) {
+                    try { window.open('/learning-experience', '_blank'); } catch { router.push('/learning-experience'); }
+                  }
+                }}
+                className="w-full bg-black text-white py-3 rounded-lg"
+              >
+                Hey nu ți amintești? Arunca un ochi în text. Nu spunem nimănui! Promitem✨.
+                </button>
+              </div>
+            )}
             {questions.map(q => (
               <div key={q.id} className="bg-white p-6 rounded-xl">
                 <h3 className="font-bold mb-4">
