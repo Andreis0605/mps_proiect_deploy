@@ -147,7 +147,7 @@ export default function Evaluation() {
           selectedSet = Number(usr.selectedSets[dbKey]);
         }
       }
-    } catch (err) {}
+    } catch (err) { }
 
     const normalData = await readData(dbKey);
 
@@ -422,7 +422,13 @@ export default function Evaluation() {
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSdyqZFY-t7Op7g8u44BntcO4q4YjPmcOxIcokFiKZbNws9Ojw/viewform"
               target="_blank"
-              className="text-indigo-600 underline"
+              rel="noopener noreferrer"
+              className="inline-block bg-indigo-600 text-white 
+px-10 py-5 text-lg md:text-xl 
+rounded-xl font-bold 
+hover:bg-indigo-700 transition 
+shadow-lg hover:shadow-xl"
+
             >
               Spune-ne părerea ta 😊
             </a>
