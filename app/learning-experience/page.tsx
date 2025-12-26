@@ -97,7 +97,7 @@ export default function LearningExperience() {
       const topKeys = Object.keys(data || {});
       const numericTopKeys = topKeys.filter(k => /^\d+$/.test(k));
 
-        let itemsToIterate: any[] = [];
+      let itemsToIterate: any[] = [];
       if (numericTopKeys.length > 0) {
 
         if (selectedSet !== null && typeof data[String(selectedSet)] !== 'undefined') {
@@ -121,10 +121,10 @@ export default function LearningExperience() {
           itemsToIterate = Object.values(data).flatMap((s: any) => Object.values(s || {}));
         }
       } else {
-          itemsToIterate = Object.values(data);
+        itemsToIterate = Object.values(data);
       }
 
-        itemsToIterate.forEach((item: any) => {
+      itemsToIterate.forEach((item: any) => {
         if (item?.title && item?.info) {
           chapters.push({
             title: item.title,
@@ -179,12 +179,12 @@ export default function LearningExperience() {
           selectedSet = Number(usr.selectedSets[normalMap[key]]);
         }
       }
-  } catch (err) {}
+    } catch (err) { }
 
-  const deepData = await loadDeepChaptersFromDB(normalMap[key], selectedSet);
+    const deepData = await loadDeepChaptersFromDB(normalMap[key], selectedSet);
 
-  setTopicContent(controlData ? Object.values(controlData).slice(0, 5) : null);
-  setDeepChapters(deepData);
+    setTopicContent(controlData ? Object.values(controlData).slice(0, 5) : null);
+    setDeepChapters(deepData);
     setTopicLoading(false);
   }
 
@@ -200,7 +200,7 @@ export default function LearningExperience() {
         // fetch user record
         findUserByEmail(u.email).then(user => {
           if (user && typeof user.gamification !== 'undefined') setIsGamified(Boolean(user.gamification));
-        }).catch(() => {});
+        }).catch(() => { });
       } else {
         // unknown -> leave null (will show images)
       }
@@ -239,7 +239,7 @@ export default function LearningExperience() {
       {/* START */}
       <section className="py-20 bg-gray-50 text-center">
         <h2 className="text-4xl mb-6 font-bold">Hai să începem</h2>
-  <ConditionalImg src={imgImage19.src} className="mx-auto mb-8 max-w-md" />
+        <ConditionalImg src={imgImage19.src} className="mx-auto mb-8 max-w-md" />
         <div className="flex justify-center gap-4">
           <button onClick={scrollToTopics} className="bg-black text-white px-8 py-3 rounded-lg">
             Start Learning
@@ -254,7 +254,7 @@ export default function LearningExperience() {
       <section id="topics-section" className="py-20">
         <h2 className="text-center text-5xl font-bold mb-10">Alege un subiect</h2>
         <div className="flex justify-center gap-6 flex-wrap">
-            {[
+          {[
             { key: "human_body", label: "Corpul Uman", img: imgCorpulUman },
             { key: "animals", label: "Animale", img: imgAnimale },
             { key: "history", label: "Istorie", img: imgIstorie },
@@ -409,6 +409,25 @@ export default function LearningExperience() {
           </button>
         </section>
       )}
+
+      <section className="py-16 bg-gray-50 text-center">
+        <h3 className="text-3xl font-bold mb-6">
+          Ne ajuți cu o părere? 😊
+        </h3>
+
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdyqZFY-t7Op7g8u44BntcO4q4YjPmcOxIcokFiKZbNws9Ojw/viewform"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-indigo-600 text-white
+    px-12 py-6 text-2xl
+    rounded-2xl font-extrabold
+    hover:bg-indigo-700 transition
+    shadow-xl hover:scale-105 transform"
+        >
+          Spune-ne părerea ta ✍️
+        </a>
+      </section>
 
       <section className="py-12 bg-white flex justify-center">
         <ConditionalImg src={imgImage87.src} className="max-w-4xl w-full" />
