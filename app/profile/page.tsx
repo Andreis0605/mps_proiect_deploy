@@ -86,8 +86,8 @@ export const LoginFormInner = React.memo(function LoginFormInner({ hasAccount, s
       <h2 className="text-2xl font-bold mb-6">Ai deja un profil?</h2>
 
       <label className="flex items-center gap-3 cursor-pointer mb-6">
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           checked={hasAccount}
           onChange={e => setHasAccount(e.target.checked)}
           className="w-5 h-5 accent-purple-600"
@@ -179,7 +179,7 @@ export const SignupFormInner = React.memo(function SignupFormInner({
   return (
     <div className="mt-12 space-y-6">
       <label className="flex items-center gap-3 cursor-pointer">
-        <input 
+        <input
           type="checkbox"
           checked={hasAccount}
           onChange={e => setHasAccount(e.target.checked)}
@@ -190,16 +190,29 @@ export const SignupFormInner = React.memo(function SignupFormInner({
 
       <h3 className="text-2xl font-bold">Profilul tău</h3>
 
-      {/* Consent */}
-      <label className="flex items-center gap-3 cursor-pointer">
-        <input 
-          type="checkbox" 
-          checked={hasConsent}
-          onChange={e => setHasConsent(e.target.checked)}
-          className="w-5 h-5 accent-purple-600"
-        />
-        <span className="text-red-600 font-semibold">Îmi dau acordul pentru prelucrarea datelor *</span>
-      </label>
+      <div className="space-y-2">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={hasConsent}
+            onChange={e => setHasConsent(e.target.checked)}
+            className="w-5 h-5 accent-purple-600"
+          />
+          <span className="text-red-600 font-semibold">
+            Îmi dau acordul pentru prelucrarea datelor *
+          </span>
+        </label>
+
+        {/* GDPR link */}
+        <a
+          href="https://docs.google.com/document/d/1u_9xVyP9WqC9K9cl5djnjGmqHblpMybX/edit"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-8 text-sm text-indigo-600 underline hover:text-indigo-800"
+        >
+          Citește documentul GDPR
+        </a>
+      </div>
 
       <form onSubmit={submit} className="space-y-4">
         <DebugInput
@@ -233,14 +246,14 @@ export const SignupFormInner = React.memo(function SignupFormInner({
           )}
         </div>
 
-  <DebugInput debugId="signup-email" name="signupEmail" type="email" placeholder="email@janedomain.ro" className="w-full border px-4 py-3 rounded-lg" value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} />
+        <DebugInput debugId="signup-email" name="signupEmail" type="email" placeholder="email@janedomain.ro" className="w-full border px-4 py-3 rounded-lg" value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} />
 
-  <DebugInput debugId="signup-password" name="signupPassword" type="password" placeholder="Parolă" className="w-full border px-4 py-3 rounded-lg" value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} />
+        <DebugInput debugId="signup-password" name="signupPassword" type="password" placeholder="Parolă" className="w-full border px-4 py-3 rounded-lg" value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} />
 
-  <DebugInput debugId="signup-confirm" name="signupConfirm" type="password" placeholder="Confirmă parola" className="w-full border px-4 py-3 rounded-lg" value={confirm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirm(e.target.value)} />
+        <DebugInput debugId="signup-confirm" name="signupConfirm" type="password" placeholder="Confirmă parola" className="w-full border px-4 py-3 rounded-lg" value={confirm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirm(e.target.value)} />
         {password !== '' && confirm !== '' && password !== confirm && <p className="text-red-600 text-sm">Parolele nu coincid.</p>}
 
-  <DebugInput debugId="signup-avatar" name="signupAvatar" type="text" placeholder="Numele Avatarului" className="w-full border px-4 py-3 rounded-lg" value={avatarName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAvatarName(e.target.value)} />
+        <DebugInput debugId="signup-avatar" name="signupAvatar" type="text" placeholder="Numele Avatarului" className="w-full border px-4 py-3 rounded-lg" value={avatarName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAvatarName(e.target.value)} />
 
         {signupError && <p className="text-red-600">{signupError}</p>}
 
@@ -293,7 +306,7 @@ export const ProfileViewInner = React.memo(function ProfileViewInner({
             type="number"
             className="w-full border px-4 py-3 rounded-lg"
             value={formData.age}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({...prev, age: e.target.value}))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({ ...prev, age: e.target.value }))}
             onFocus={() => console.debug('[Profile][View] age focus')}
             onBlur={() => console.debug('[Profile][View] age blur')}
           />
@@ -315,7 +328,7 @@ export const ProfileViewInner = React.memo(function ProfileViewInner({
                     key={type}
                     className="w-full px-4 py-2 text-left hover:bg-purple-100"
                     onClick={() => {
-                      setFormData((prev: any) => ({...prev, personality: type}));
+                      setFormData((prev: any) => ({ ...prev, personality: type }));
                       setShowDropdown(false);
                     }}
                   >
@@ -331,7 +344,7 @@ export const ProfileViewInner = React.memo(function ProfileViewInner({
             type="email"
             className="w-full border px-4 py-3 rounded-lg"
             value={formData.email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({...prev, email: e.target.value}))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({ ...prev, email: e.target.value }))}
             onFocus={() => console.debug('[Profile][View] email focus')}
             onBlur={() => console.debug('[Profile][View] email blur')}
           />
@@ -348,7 +361,7 @@ export const ProfileViewInner = React.memo(function ProfileViewInner({
             type="text"
             className="w-full border px-4 py-3 rounded-lg"
             value={formData.avatarName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({...prev, avatarName: e.target.value}))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData((prev: any) => ({ ...prev, avatarName: e.target.value }))}
             onFocus={() => console.debug('[Profile][View] avatar focus')}
             onBlur={() => console.debug('[Profile][View] avatar blur')}
           />
@@ -419,7 +432,7 @@ export default function ProfilePage() {
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<'success'|'error'|'info'>('info');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('info');
 
   useEffect(() => {
     const saved = localStorage.getItem("userAvatar");
@@ -438,17 +451,17 @@ export default function ProfilePage() {
           setHasConsent(!!u.consent);
         }
       }
-    } catch (err) {}
+    } catch (err) { }
   }, []);
 
 
   /* ----------------------------- PROFILE VIEW (memoized) ----------------------------- */
 
-  
+
 
   const handleAvatarSelect = useCallback((avatarId: number) => {
     setSelectedAvatar(avatarId);
-    try { localStorage.setItem("userAvatar", avatarId.toString()); } catch (err) {}
+    try { localStorage.setItem("userAvatar", avatarId.toString()); } catch (err) { }
     const a = AVATARS.find(av => av.id === avatarId);
     if (a) {
       // store the avatar image URL in form data
@@ -462,7 +475,7 @@ export default function ProfilePage() {
           localStorage.setItem('sessionUser', JSON.stringify(nu));
           window.dispatchEvent(new Event('sessionUserChanged'));
         }
-      } catch (err) {}
+      } catch (err) { }
     }
   }, [setSelectedAvatar, setFormData]);
 
@@ -492,7 +505,7 @@ export default function ProfilePage() {
         const avatar = getUserAvatar().image.src;
         localStorage.setItem('sessionUser', JSON.stringify({ email, age: '20', personality: 'INTJ', avatarName: 'SuperCoolAvatarName', avatarImage: avatar }));
         window.dispatchEvent(new Event('sessionUserChanged'));
-      } catch (err) {}
+      } catch (err) { }
       setToastMessage('Autentificare reușită'); setToastType('success'); setToastVisible(true);
     } else {
       setLoginError("Email sau parolă incorectă. Încearcă: " + MOCK_EMAIL);
@@ -541,7 +554,7 @@ export default function ProfilePage() {
       const avatarSrc = chosen ? chosen.image.src : getUserAvatar().image.src;
       localStorage.setItem('sessionUser', JSON.stringify({ email, age, personality: formData.personality || '', avatarName: avatarName || '', avatarImage: avatarSrc }));
       window.dispatchEvent(new Event('sessionUserChanged'));
-    } catch (err) {}
+    } catch (err) { }
     setToastMessage('Cont creat cu succes'); setToastType('success'); setToastVisible(true);
   }, [formData, selectedAvatar, setFormData, setIsLoggedIn, setSignupError, setToastMessage, setToastType, setToastVisible]);
 
@@ -559,7 +572,7 @@ export default function ProfilePage() {
         avatarName: "",
         avatarImage: ""
       });
-  try { localStorage.removeItem('sessionUser'); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) {}
+      try { localStorage.removeItem('sessionUser'); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) { }
     }
   }, [setIsLoggedIn, setHasAccount, setHasConsent, setFormData]);
 
@@ -577,7 +590,7 @@ export default function ProfilePage() {
       avatarName: "",
       avatarImage: ""
     });
-  try { localStorage.removeItem('sessionUser'); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) {}
+    try { localStorage.removeItem('sessionUser'); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) { }
     // navigate home
     try { router.push('/home'); } catch (err) { /* ignore */ }
   }, [setIsLoggedIn, setHasAccount, setHasConsent, setFormData, router]);
@@ -610,7 +623,7 @@ export default function ProfilePage() {
         if (typeof updates.consent !== 'undefined') u.consent = updates.consent;
         localStorage.setItem('sessionUser', JSON.stringify(u));
         window.dispatchEvent(new Event('sessionUserChanged'));
-      } catch (err) {}
+      } catch (err) { }
       setToastMessage('Profil actualizat cu succes'); setToastType('success'); setToastVisible(true);
     } catch (err) {
       console.error('updateUserProfile error', err);
@@ -633,8 +646,8 @@ export default function ProfilePage() {
         setHasConsent(!!user.consent);
         setLoginError('');
         setFormData(prev => ({ ...prev, email, password, age: user.age || '', personality: user.personality || '', avatarName: user.avatarName || '', avatarImage: user.avatarImage || prev.avatarImage || getUserAvatar().image.src, consent: !!user.consent }));
-  try { localStorage.setItem('sessionUser', JSON.stringify({ email, age: user.age || '', personality: user.personality || '', avatarName: user.avatarName || '', avatarImage: user.avatarImage || getUserAvatar().image.src, consent: !!user.consent })); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) {}
-    setToastMessage('Autentificare reușită'); setToastType('success'); setToastVisible(true);
+        try { localStorage.setItem('sessionUser', JSON.stringify({ email, age: user.age || '', personality: user.personality || '', avatarName: user.avatarName || '', avatarImage: user.avatarImage || getUserAvatar().image.src, consent: !!user.consent })); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) { }
+        setToastMessage('Autentificare reușită'); setToastType('success'); setToastVisible(true);
       } catch (err) {
         console.error('verifyCredentials error', err);
         setLoginError('Eroare la autentificare. Încearcă din nou.');
@@ -684,9 +697,9 @@ export default function ProfilePage() {
           avatarImage: avatarImageSrc
         }));
         setIsLoggedIn(true);
-  try { localStorage.setItem('sessionUser', JSON.stringify({ email: values.email, age: values.age, personality: values.personality, avatarName: values.avatarName, avatarImage: avatarImageSrc, consent: !!hasConsent })); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) {}
-    setToastMessage('Cont creat cu succes'); setToastType('success'); setToastVisible(true);
-  console.debug('Created user', user);
+        try { localStorage.setItem('sessionUser', JSON.stringify({ email: values.email, age: values.age, personality: values.personality, avatarName: values.avatarName, avatarImage: avatarImageSrc, consent: !!hasConsent })); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) { }
+        setToastMessage('Cont creat cu succes'); setToastType('success'); setToastVisible(true);
+        console.debug('Created user', user);
       } catch (err: any) {
         console.error('createAccount error', err);
         setSignupError('Eroare la crearea contului. Încearcă din nou.');
@@ -706,8 +719,8 @@ export default function ProfilePage() {
 
         {isLoggedIn && (
           <label className="flex items-center gap-3 cursor-pointer mt-4">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={hasConsent}
               onChange={async e => {
                 const v = e.target.checked;
@@ -720,7 +733,7 @@ export default function ProfilePage() {
                   u = { ...u, consent: v };
                   localStorage.setItem('sessionUser', JSON.stringify(u));
                   window.dispatchEvent(new Event('sessionUserChanged'));
-                } catch (err) {}
+                } catch (err) { }
 
                 // if logged in, persist to DB
                 try {
@@ -751,8 +764,8 @@ export default function ProfilePage() {
       <h2 className="text-2xl font-bold mb-6">Ai deja un profil?</h2>
 
       <label className="flex items-center gap-3 cursor-pointer mb-6">
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           checked={hasAccount}
           onChange={e => setHasAccount(e.target.checked)}
           className="w-5 h-5 accent-purple-600"
@@ -770,7 +783,7 @@ export default function ProfilePage() {
           placeholder="email@janedomain.ro"
           className="w-full border px-4 py-3 rounded-lg"
           defaultValue={formData.email}
-          onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, email: e.target.value}))}
+          onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, email: e.target.value }))}
         />
 
         <DebugInput
@@ -780,7 +793,7 @@ export default function ProfilePage() {
           placeholder="••••••••"
           className="w-full border px-4 py-3 rounded-lg"
           defaultValue={formData.password}
-          onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, password: e.target.value}))}
+          onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, password: e.target.value }))}
         />
 
         {loginError && <p className="text-red-600">{loginError}</p>}
@@ -813,7 +826,7 @@ export default function ProfilePage() {
     return (
       <div className="mt-12 space-y-6">
         <label className="flex items-center gap-3 cursor-pointer">
-          <input 
+          <input
             type="checkbox"
             checked={hasAccount}
             onChange={e => setHasAccount(e.target.checked)}
@@ -826,8 +839,8 @@ export default function ProfilePage() {
 
         {/* Consent */}
         <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             checked={hasConsent}
             onChange={e => setHasConsent(e.target.checked)}
             className="w-5 h-5 accent-purple-600"
@@ -851,7 +864,7 @@ export default function ProfilePage() {
               (e.target as HTMLInputElement).value = v;
               setAgeIsNumber(v === '' || /^[0-9]+$/.test(v));
             }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, age: e.target.value}))}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, age: e.target.value }))}
           />
           {!ageIsNumber && <p className="text-red-600 text-sm">Vârsta trebuie să conțină doar cifre.</p>}
 
@@ -872,7 +885,7 @@ export default function ProfilePage() {
                     type="button"
                     key={type}
                     onClick={() => {
-                              setFormData(prev => ({...prev, personality: type}));
+                      setFormData(prev => ({ ...prev, personality: type }));
                       setShowDropdown(false);
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-purple-100"
@@ -891,7 +904,7 @@ export default function ProfilePage() {
             placeholder="email@janedomain.ro"
             className="w-full border px-4 py-3 rounded-lg"
             defaultValue={formData.email}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, email: e.target.value}))}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, email: e.target.value }))}
           />
 
           <DebugInput
@@ -902,7 +915,7 @@ export default function ProfilePage() {
             className="w-full border px-4 py-3 rounded-lg"
             value={signupPasswordLocal}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSignupPasswordLocal(e.target.value)}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, password: e.target.value}))}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, password: e.target.value }))}
           />
 
           <DebugInput
@@ -913,7 +926,7 @@ export default function ProfilePage() {
             className="w-full border px-4 py-3 rounded-lg"
             value={signupConfirmLocal}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSignupConfirmLocal(e.target.value)}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, confirmPassword: e.target.value}))}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
           />
           {signupPasswordLocal !== '' && signupConfirmLocal !== '' && signupPasswordLocal !== signupConfirmLocal && (
             <p className="text-red-600 text-sm">Parolele nu coincid.</p>
@@ -926,7 +939,7 @@ export default function ProfilePage() {
             placeholder="Numele Avatarului"
             className="w-full border px-4 py-3 rounded-lg"
             defaultValue={formData.avatarName}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({...prev, avatarName: e.target.value}))}
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, avatarName: e.target.value }))}
           />
 
           {signupError && <p className="text-red-600">{signupError}</p>}
@@ -948,11 +961,10 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={!isFormComplete}
-            className={`w-full py-3 rounded-lg ${
-              isFormComplete
+            className={`w-full py-3 rounded-lg ${isFormComplete
                 ? "bg-black text-white hover:bg-gray-800"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+              }`}
           >
             Salvează
           </button>
@@ -978,34 +990,34 @@ export default function ProfilePage() {
 
         <div className="max-w-7xl mx-auto px-8">
           <Toast visible={toastVisible} message={toastMessage} type={toastType} onClose={() => setToastVisible(false)} />
-        <PrivacySection />
+          <PrivacySection />
 
-        {!isLoggedIn && (
-          <div>
-            <div style={{ display: hasAccount ? 'block' : 'none' }}>
-              <LoginFormInner hasAccount={hasAccount} setHasAccount={setHasAccount} onLogin={handleLoginWithValues} loginError={loginError} />
+          {!isLoggedIn && (
+            <div>
+              <div style={{ display: hasAccount ? 'block' : 'none' }}>
+                <LoginFormInner hasAccount={hasAccount} setHasAccount={setHasAccount} onLogin={handleLoginWithValues} loginError={loginError} />
+              </div>
+              <div style={{ display: hasAccount ? 'none' : 'block' }}>
+                <SignupFormInner hasAccount={hasAccount} setHasAccount={setHasAccount} hasConsent={hasConsent} setHasConsent={setHasConsent} onSignup={handleSignupWithValues} signupError={signupError} avatars={AVATARS} selectedAvatar={selectedAvatar} onSelectAvatar={handleAvatarSelect} />
+              </div>
             </div>
-            <div style={{ display: hasAccount ? 'none' : 'block' }}>
-              <SignupFormInner hasAccount={hasAccount} setHasAccount={setHasAccount} hasConsent={hasConsent} setHasConsent={setHasConsent} onSignup={handleSignupWithValues} signupError={signupError} avatars={AVATARS} selectedAvatar={selectedAvatar} onSelectAvatar={handleAvatarSelect} />
-            </div>
-          </div>
-        )}
+          )}
 
-        {isLoggedIn && (
-          <ProfileViewInner
-            formData={formData}
-            setFormData={setFormData}
-            selectedAvatar={selectedAvatar}
-            setShowDropdown={setShowDropdown}
-            showDropdown={showDropdown}
-            handleAvatarSelect={handleAvatarSelect}
-            handleUpdateProfile={handleUpdateProfile}
-            handleDeleteProfile={handleDeleteProfile}
-            handleLogout={handleLogout}
-          />
-        )}
+          {isLoggedIn && (
+            <ProfileViewInner
+              formData={formData}
+              setFormData={setFormData}
+              selectedAvatar={selectedAvatar}
+              setShowDropdown={setShowDropdown}
+              showDropdown={showDropdown}
+              handleAvatarSelect={handleAvatarSelect}
+              handleUpdateProfile={handleUpdateProfile}
+              handleDeleteProfile={handleDeleteProfile}
+              handleLogout={handleLogout}
+            />
+          )}
+        </div>
       </div>
     </div>
-  </div>
   );
 }
