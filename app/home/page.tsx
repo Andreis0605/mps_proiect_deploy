@@ -28,7 +28,7 @@ export default function Home() {
 
       {/* HERO SECTION */}
       <section className="relative bg-gradient-to-br from-indigo-500 to-purple-500 min-h-[600px] flex items-center justify-center overflow-hidden">
-        <img 
+        <img
           src={imgHero.src}
           alt="Gamification Platform"
           className="absolute inset-0 w-full max-w-[600px] opacity-40 object-contain m-auto"
@@ -39,11 +39,12 @@ export default function Home() {
           <p className="mb-8 text-xl opacity-90">Cercetarea comportamentului în timpul învățării</p>
 
           <Link
-            href="/learning-experience"
+            href="/profile"
             className="inline-block bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-lg transition"
           >
-            Go to Learning Experience
+            Go to Profile
           </Link>
+
         </div>
       </section>
 
@@ -112,10 +113,10 @@ export default function Home() {
 
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/learning-experience"
+              href="/profile"
               className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg"
             >
-              Go to Learning
+              Go to Profile
             </Link>
 
             <a
