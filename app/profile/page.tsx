@@ -697,7 +697,13 @@ export default function ProfilePage() {
           avatarImage: avatarImageSrc
         }));
         setIsLoggedIn(true);
-        try { localStorage.setItem('sessionUser', JSON.stringify({ email: values.email, age: values.age, personality: values.personality, avatarName: values.avatarName, avatarImage: avatarImageSrc, consent: !!hasConsent })); window.dispatchEvent(new Event('sessionUserChanged')); } catch (err) { }
+        try {
+          // include selectedSets returned by backend user object if present
+          const sessionObj: any = { email: values.email, age: values.age, personality: values.personality, avatarName: values.avatarName, avatarImage: avatarImageSrc, consent: !!hasConsent };
+          if (user && user.selectedSets) sessionObj.selectedSets = user.selectedSets;
+          localStorage.setItem('sessionUser', JSON.stringify(sessionObj));
+          window.dispatchEvent(new Event('sessionUserChanged'));
+        } catch (err) { }
         setToastMessage('Cont creat cu succes'); setToastType('success'); setToastVisible(true);
         console.debug('Created user', user);
       } catch (err: any) {

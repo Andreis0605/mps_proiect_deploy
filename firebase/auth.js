@@ -51,6 +51,15 @@ export async function createAccount({
     consent: !!consent,
     gamification,
 
+    // Per-user selected sets for topics (0..3 inclusive) — generated at account creation
+    selectedSets: {
+      Human: Math.floor(Math.random() * 4),
+      Animals: Math.floor(Math.random() * 4),
+      History: Math.floor(Math.random() * 4),
+      Geo: Math.floor(Math.random() * 4),
+      Famous: Math.floor(Math.random() * 4),
+    },
+
     // ⭐ scorul este inițializat O SINGURĂ DATĂ
     scores: {
       learning: 0,
