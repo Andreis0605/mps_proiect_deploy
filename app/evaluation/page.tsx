@@ -390,6 +390,10 @@ export default function Evaluation() {
                   )}
                 </div>
 
+                {q.image && (
+                  <ConditionalImg src={q.image.src} alt={`Ilustrație pentru întrebarea ${q.id}`} className="w-full max-w-md mx-auto mb-4" />
+                )}
+
                 {q.options.map((opt, i) => {
                   const letter = String.fromCharCode(97 + i);
                   const selected = answers[q.id] === letter;
