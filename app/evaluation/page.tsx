@@ -47,6 +47,7 @@ interface Question {
   options: string[];
   correctAnswer: string;
   image: any;
+  chapter?: { title: string; info: any } | null;
 }
 
 /* ================= MAPS ================= */
@@ -200,6 +201,7 @@ export default function Evaluation() {
       options: Object.values(q.options) as string[],
       correctAnswer: q.correct_answer,
       image: questionImages[i % questionImages.length],
+      chapter: q.__chapter ? { title: q.__chapter.title, info: q.__chapter.info } : null,
     }));
 
     /* 🔥 SALVĂ CAPITOLELE PENTRU APROFUNDARE */
@@ -238,6 +240,7 @@ export default function Evaluation() {
         options: Object.values(q.options) as string[],
         correctAnswer: q.correct_answer,
         image: questionImages[(normalQs.length + i) % questionImages.length],
+        chapter: null,
       }));
 
     /* ================= MERGE ================= */
@@ -345,66 +348,47 @@ export default function Evaluation() {
       {questions.length > 0 && (!showScore || revealAnswers) && (
         <section className="py-16 bg-gray-100">
           <div className="max-w-3xl mx-auto space-y-8">
-            {/* HINT BUTTON: navigates to the learning text for this user */}
-            {isGamified === true && (
-              <div className="text-left">
-                <button
-                onClick={() => {
-                  try {
-                    const raw = localStorage.getItem('lastEvaluationChapters');
-                    let pick = null;
-                    if (raw) {
-                      const arr = JSON.parse(raw);
-                      if (Array.isArray(arr) && arr.length > 0) pick = arr[0];
-                    }
-
-                    if (pick) {
-                      // store pick so learning-experience can highlight/scroll to it
-                      localStorage.setItem('highlightChapter', JSON.stringify(pick));
-                    } else {
-                      // fallback: clear any stale highlight
-                      localStorage.removeItem('highlightChapter');
-                    }
-
-                    // also store topic key so learning-experience can auto-select the topic
-                    try {
-                      const dbLower = currentTopicKey; // previously set to dbKey.toLowerCase()
-                      const dbToLearning: Record<string, string> = {
-                        human: 'human_body',
-                        animals: 'animals',
-                        history: 'history',
-                        geo: 'geography',
-                        famous: 'famous_people',
-                      };
-                      if (dbLower && dbToLearning[dbLower]) {
-                        localStorage.setItem('highlightTopic', dbToLearning[dbLower]);
-                      } else {
-                        localStorage.removeItem('highlightTopic');
-                      }
-                    } catch (e) {}
-
-                    // open learning experience in a new tab
-                    try {
-                      window.open('/learning-experience', '_blank');
-                    } catch (e) {
-                      // fallback to client router if window.open not available
-                      router.push('/learning-experience');
-                    }
-                  } catch (e) {
-                    try { window.open('/learning-experience', '_blank'); } catch { router.push('/learning-experience'); }
-                  }
-                }}
-                className="w-full bg-black text-white py-3 rounded-lg"
-              >
-                Hey nu ți amintești? Arunca un ochi în text. Nu spunem nimănui! Promitem✨.
-                </button>
-              </div>
-            )}
+            {/* Per-question hint buttons (appear inside each question tile for gamified users) */}
             {questions.map(q => (
               <div key={q.id} className="bg-white p-6 rounded-xl">
-                <h3 className="font-bold mb-4">
-                  {q.id}. {q.question}
-                </h3>
+                <div className="flex items-start justify-between">
+                  <h3 className="font-bold mb-4">
+                    {q.id}. {q.question}
+                  </h3>
+
+                  {isGamified === true && (
+                    <button
+                      onClick={() => {
+                        try {
+                          const pick = q.chapter || (JSON.parse(localStorage.getItem('lastEvaluationChapters') || 'null') || [])[0] || null;
+                          if (pick) localStorage.setItem('highlightChapter', JSON.stringify(pick));
+
+                          try {
+                            const dbLower = currentTopicKey;
+                            const dbToLearning: Record<string, string> = {
+                              human: 'human_body',
+                              animals: 'animals',
+                              history: 'history',
+                              geo: 'geography',
+                              famous: 'famous_people',
+                            };
+                            if (dbLower && dbToLearning[dbLower]) {
+                              localStorage.setItem('highlightTopic', dbToLearning[dbLower]);
+                            } else {
+                              localStorage.removeItem('highlightTopic');
+                            }
+                          } catch (e) {}
+
+                          try { window.open('/learning-experience', '_blank'); } catch { router.push('/learning-experience'); }
+                        } catch (e) { try { window.open('/learning-experience', '_blank'); } catch { router.push('/learning-experience'); } }
+                      }}
+                      className="text-xs bg-gray-100 text-gray-800 px-3 py-1 rounded-md"
+                      aria-label={`Vezi textul aferent întrebării ${q.id}`}
+                    >
+                      Nu esti sigur? Verifica textul.
+                    </button>
+                  )}
+                </div>
 
                 {q.options.map((opt, i) => {
                   const letter = String.fromCharCode(97 + i);
