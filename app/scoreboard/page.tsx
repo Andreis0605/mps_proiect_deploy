@@ -595,7 +595,6 @@ export default function ScoreboardPage() {
         </div>
       </section>
 
-      <Navigation />
     </div>
   );
 }
